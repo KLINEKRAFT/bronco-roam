@@ -1,7 +1,44 @@
 # Bronco Roam
 
-A static procedural desert you can drive, in one HTML file. No build step, no
-dependencies, no network calls — open `index.html` and go.
+A desert driving adventure starring **Michael**, in one HTML file. Help the
+local town, follow a mysterious signal, and complete the Bronco Run to earn
+your **Desert Legend** badge. No build step or gameplay dependencies — open `index.html` and go.
+The optional web font falls back to system fonts when offline.
+
+## Michael’s adventure
+
+| Chapter | Activity | Reward |
+|---|---|---|
+| A good neighbor | Stop near the first wreck and help a stranded driver | $120 |
+| Precious cargo | Load supplies at the roadside depot and deliver them to town | $180 + $60 for gentle handling |
+| Back on the air | Recover parts from the western wreck and repair the radio stack | $220 |
+| Something out there | Cross the desert and survey the monolith | $300 |
+| Bring it home | Return the survey to town headquarters | $150 |
+| The Bronco Run | Pass four ordered road checkpoints in 150 seconds | $400 |
+
+Gold ground rings, a destination arrow, distance readout, and a north-up local
+map guide each leg. Park at a stop, then tap the action button or press **E**.
+Michael gets out beside the Bronco during the timed roadside action; while
+driving, the existing Outdoorsman rig is posed in the driver’s seat and follows
+the vehicle’s full rotation. The cockpit camera omits the driver mesh to avoid
+putting the camera inside his head. His supplied character reference appears
+in the field journal.
+
+Five blue trail stamps reward exploration with $40 each. Spend earnings in the
+journal on an engine tune (+15% power), rally brakes (+25% braking), and desert
+suspension (+20% damping). Complete the campaign to open free roam, a completion
+screen, and rally replays with a personal best time and a $100 replay reward.
+
+The journal pauses driving, service actions, and the rally timer. Progress,
+credits, upgrades, stamps, cargo condition, and best time save **on this device**
+using localStorage; this is not account/cloud sync. Reloading restores the last
+completed stop, and an unfinished rally restarts at its first leg. If storage
+is unavailable, play continues and the journal reports the limitation.
+**Recover** repairs the Bronco and returns it to the last completed stop (or the
+rally start). A new adventure requires an explicit in-game confirmation.
+
+The original terrain, vehicle damage, traffic, radio, storms, camera modes,
+imported assets, and Easter eggs remain part of the adventure.
 
 Raw WebGL2 + hand-written GLSL. Fixed seed (1337), so the world is identical on
 every load and on every device.
@@ -14,15 +51,19 @@ every load and on every device.
 |---|---|
 | Steer | drag anywhere on the left half of the screen — drag right, turn right |
 | Throttle / brake | GAS / BRK pads, bottom right |
-| Handbrake | HAND pad (landscape only) |
+| Handbrake | HAND pad beside GAS |
 | Tilt steering | TILT — asks for motion permission on iOS, then steer by tilting |
 | Camera | CAM cycles chase → cockpit → wide |
-| Finding the town | the HUD reads `TOWN -54,-1800 · 2.8KM · 176°` — drive south from the spawn and follow the road |
+| Objective | follow the gold arrow and ground ring; the local map shows roads and nearby stamps |
+| Journal / upgrades | JOURNAL opens Michael’s objectives and equipment; driving pauses |
+| Interact | park at a gold stop, then tap the action button |
+| Recovery | RECOVER returns to the last stop and repairs the Bronco |
 | Radio | RADIO cycles the stations: ROAM → THRASH → AM → OFF |
 
 **Keyboard**
 
-`W A S D` or arrows · `Space` handbrake · `R` reset · `C` camera · `M` radio · `F` frame stats
+`W A S D` or arrows · `Space` handbrake · `E` interact · `J` / `Escape` journal
+· `R` recover · `C` camera · `M` radio · `F` frame stats
 
 ## How it works
 
@@ -498,13 +539,23 @@ pull-back so portrait framing works, a screen wake lock while driving,
 device-pixel-ratio capped at 2, and an adaptive resolution scale (plus an LOD
 fallback) that reacts to sustained frame time.
 
+## Adventure verification
+
+`node tools/verify-adventure.mjs` runs the actual inline game with stubbed DOM
+and WebGL calls. It checks initialization, service proximity and speed gates,
+the complete campaign, rewards, upgrade purchase guards, ordered race gates,
+timeout/retry, personal bests, replay rewards, pause, malformed/blocked saves,
+input release, finite driver skin matrices, and frame integration. It also
+drives the rally route through the actual vehicle/terrain physics to check the
+time budget. This is logic and physics verification, not browser or visual QA.
+
 ## Running it
 
 ```
 open index.html          # or serve the directory, any static host works
 ```
 
-`index.html` is ~960 KB, most of it packed geometry: the vehicle, the
+`index.html` is ~1.32 MB, most of it packed geometry: the vehicle, the
 Outdoorsman, the wordmark, sixteen imported rocks and landforms, and the
 embedded cover art. Still one file, no build step, no runtime fetches — and no
 audio files, because there is no recorded audio.
